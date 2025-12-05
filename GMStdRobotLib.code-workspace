@@ -25,7 +25,10 @@
             "editor.tabSize": 4,
             "editor.autoIndent": "advanced"
         },
-        "extensions.ignoreRecommendations": true
+        "extensions.ignoreRecommendations": true,
+        "clangd.arguments": [
+            "--compile-commands-dir=/Users/eric/GSRL/GSRL/Dependence/CMSIS-DSP/Examples/cmsis_build/out/bayes/VHT-Corstone-310/Release"
+        ]
     },
     "extensions": {
         "recommendations": [

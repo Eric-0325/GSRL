@@ -1,87 +1,52 @@
 cmake_minimum_required(VERSION 3.22)
 
-#
-# This file is generated only once,
-# and is not re-generated if converter is called multiple times.
-#
-# User is free to modify the file as much as necessary
-#
+project(gsrl LANGUAGES C CXX)
 
-# Setup compiler settings
-set(CMAKE_C_STANDARD 11)
-set(CMAKE_C_STANDARD_REQUIRED ON)
-set(CMAKE_C_EXTENSIONS ON)
+add_library(${PROJECT_NAME} OBJECT)
 
+set(CMSISCORE "${CMAKE_SOURCE_DIR}/CubeMX_BSP/Drivers/CMSIS/Core")
+add_subdirectory(Dependence/CMSIS-DSP)
+add_subdirectory(Dependence/eigen)
 
-# Define the build type
-if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE "Debug")
-endif()
-
-# Set the project name
-set(CMAKE_PROJECT_NAME GMStdRobotLib)
-
-# Enable compile command to ease indexing with e.g. clangd
-set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
-
-# Enable colored diagnostics
-set(CMAKE_COLOR_DIAGNOSTICS ON)
-
-# Core project settings
-project(${CMAKE_PROJECT_NAME})
-message("Build type: " ${CMAKE_BUILD_TYPE})
-
-# Enable CMake support for ASM and C languages
-enable_language(C ASM)
-
-# Create an executable object type
-add_executable(${CMAKE_PROJECT_NAME})
-
-# Add STM32CubeMX generated sources
-add_subdirectory(CubeMX_BSP/cmake/stm32cubemx)
-
-# Add GSRL sources
-add_subdirectory(GSRL)
-
-# Link directories setup
-target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
-    # Add user defined library search paths
+file(GLOB_RECURSE GSRL_ALGORITHM_SOURCES
+    "Algorithm/src/*.c"
+    "Algorithm/src/*.cpp"
 )
 
-# Add sources to executable
-target_sources(${CMAKE_PROJECT_NAME} PRIVATE
-    # Add user sources here
-    Task/src/tsk_test.cpp
+file(GLOB_RECURSE GSRL_DEVICE_SOURCES
+    "Device/src/*.c"
+    "Device/src/*.cpp"
 )
 
-# Add include paths
-target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
-    # Add user defined include paths
-    Task/inc
+file(GLOB_RECURSE GSRL_DRIVER_SOURCES
+    "Driver/src/*.c"
+    "Driver/src/*.cpp"
 )
 
-# Add project symbols (macros)
-target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
-    # Add user defined symbols
+target_sources(${PROJECT_NAME} PRIVATE
+    ${GSRL_ALGORITHM_SOURCES}
+    ${GSRL_DEVICE_SOURCES}
+    ${GSRL_DRIVER_SOURCES}
 )
 
-# Add compile options
-target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
-    # Add user defined compile options
+target_include_directories(${PROJECT_NAME} PUBLIC
+    Include
+    Algorithm/inc
+    Device/inc
+    Driver/inc
 )
 
-target_link_options(${CMAKE_PROJECT_NAME} PRIVATE
-    # Add user defined link options
-    -u _printf_float
+target_compile_definitions(${PROJECT_NAME} PUBLIC
+    EIGEN_NO_MALLOC
 )
 
-# Remove wrong libob.a library dependency when using cpp files
-list(REMOVE_ITEM CMAKE_C_IMPLICIT_LINK_LIBRARIES ob)
+target_compile_features(${PROJECT_NAME} PUBLIC
+    c_std_11
+    cxx_std_17
+)
 
-# Add linked libraries
-target_link_libraries(${CMAKE_PROJECT_NAME}
+target_link_libraries(${PROJECT_NAME} PUBLIC 
     stm32cubemx
-
-    # Add user defined libraries
-    gsrl
+    CMSISDSP
+    eigen
 )

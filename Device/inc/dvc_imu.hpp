@@ -130,11 +130,11 @@ protected:
     IST8310 *m_magnet;                       // 磁力计扩展类
     fp32 m_temperature;                      // 温度值
     // 常量定义
-    static constexpr fp32 ACCEL_SEN = BMI088_ACCEL_3G_SEN;  
+    static constexpr fp32 ACCEL_SEN = BMI088_ACCEL_3G_SEN;
     static constexpr fp32 GYRO_SEN  = BMI088_GYRO_2000_SEN;
 
 public:
-    BMI088(AHRS *ahrs, SPIConfig accelSPIConfig, SPIConfig gyroSPIConfig, CalibrationInfo calibrationInfo, ErrorCallback errorCallback = nullptr, IST8310 *magnet = nullptr, TIM_HandleTypeDef *heatTim = nullptr, uint32_t heatChannel = 0);
+    BMI088(AHRS *ahrs, SPIConfig accelSPIConfig, SPIConfig gyroSPIConfig, CalibrationInfo calibrationInfo, ErrorCallback errorCallback = nullptr, IST8310 *magnet = nullptr);
     bool init() override;
 
 protected:
@@ -150,21 +150,6 @@ private:
     bool selfTestAccel();
     bool initGyro();
     bool selfTestGyro();
-    
-    TIM_HandleTypeDef *m_heatTim;
-    uint32_t m_heatChannel;
-
-    float m_tempTarget = 40.0f;
-    float m_tempKp = 1600.0f;
-    float m_tempKi = 0.2f;
-    float m_tempKd = 0.0f;
-    
-    float m_tempErrorSum = 0.0f;
-    float m_tempLastError = 0.0f;
-    float m_tempMaxOut = 4500.0f; 
-    float m_tempMaxIout = 4400.0f;
-
-    void controlTemperature();
 };
 
 /* Exported constants --------------------------------------------------------*/
